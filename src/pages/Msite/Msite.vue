@@ -1,17 +1,6 @@
 <template>
   <section class="msite">
     <!--首页头部-->
-    <!-- <header class="msite_header">
-           <span class="header_search">
-             <i class="iconfont icon-sousuo"></i>
-           </span>
-       <span class="header_title">
-             <span class="header_title_text ellipsis">昌平区北七家宏福科技园(337省道北)</span>
-           </span>
-       <span class="header_login">
-             <span class="header_login_text">登录|注册</span>
-           </span>
-     </header>-->
     <HeaderTop title="北京">
       <router-link slot="left" to="/search" class="header_search">
         <i class="iconfont icon-sousuo"></i>
@@ -128,7 +117,22 @@
          &lt;!&ndash; Add Pagination &ndash;&gt;
          <div class="swiper-pagination"></div>
        </div>-->
-      <ShopList/>
+      <!--<ShopList/>-->
+      <div class="swiper-container" v-if="categorys.length">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" v-for="(categorys, index) in categorysArr" :key="index">
+            <a href="javascript:" class="link_to_food" v-for="(category, index) in categorys" :key="index">
+              <div class="food_container">
+                <img :src="baseImageUrl+category.image_url">
+              </div>
+              <span>{{category.title}}</span>
+            </a>
+          </div>
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+      </div>
+      <img src="./images/msite_back.svg" alt="back" v-else>
     </nav>
     <!--首页附近商家-->
     <div class="msite_shop_list">
@@ -327,19 +331,54 @@ import HeaderTop from '../../components/HeaderTop/HeaderTop'
 import ShopList from '../../components/ShopList/ShopList'
 import Swiper from 'swiper'
 import 'swiper/dist/css/swiper.min.css'
+import {mapState} from 'vuex'
 
 export default {
+  data () {
+    return {
+      baseImageUrl: 'https://fuss10.elemecdn.com'
+    }
+  },
   components: {
     HeaderTop,
     ShopList
   },
   mounted () {
+    this.$store.dispatch('getCategorys')
     new Swiper('.swiper-container', {
       pagination: {
         el: '.swiper-pagination'
       },
       loop: true
     })
+  },
+  computed: {
+    ...mapState(['address', 'categorys']),
+    /*
+         根据categorys一维数组生成一个2维数组
+         小数组中的元素个数最大是8
+          */
+    categorysArr () {
+      const {categorys} = this
+      // 准备空的二维数组
+      const arr = []
+      // 准备一个小数组，最大长度8
+      let minArr = []
+      // 便利categorys
+      categorys.forEach(c => {
+        // 如果数组满了，则创建一个新的
+        if (minArr.length === 8) {
+          minArr = []
+        }
+        // 如果minArr是空的， 则将minArr保存到大数组里去
+        if (minArr.length === 0) {
+          arr.push(minArr)
+        }
+        // 将当前分类保存到小数组minArr里去
+        minArr.push(c)
+      })
+      return arr
+    }
   }
 }
 </script>
