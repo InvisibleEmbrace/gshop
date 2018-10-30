@@ -135,7 +135,7 @@
       <img src="./images/msite_back.svg" alt="back" v-else>
     </nav>
     <!--首页附近商家-->
-    <div class="msite_shop_list">
+    <!--<div class="msite_shop_list">
       <div class="shop_header">
         <i class="iconfont icon-xuanxiang"></i>
         <span class="shop_header_title">附近商家</span>
@@ -320,12 +320,13 @@
           </li>
         </ul>
       </div>
-    </div>
+    </div>-->
+    <ShopList/>
   </section>
 </template>
 
 <script>
-/* eslint-disable no-new */
+/* eslint-disable no-new,no-unused-vars */
 
 import HeaderTop from '../../components/HeaderTop/HeaderTop'
 import ShopList from '../../components/ShopList/ShopList'
@@ -345,6 +346,7 @@ export default {
   },
   mounted () {
     this.$store.dispatch('getCategorys')
+    this.$store.dispatch('getAddress')
     new Swiper('.swiper-container', {
       pagination: {
         el: '.swiper-pagination'
@@ -355,11 +357,12 @@ export default {
   computed: {
     ...mapState(['address', 'categorys']),
     /*
-         根据categorys一维数组生成一个2维数组
-         小数组中的元素个数最大是8
-          */
+           根据categorys一维数组生成一个2维数组
+           小数组中的元素个数最大是8
+            */
     categorysArr () {
       const {categorys} = this
+      const {address} = this
       // 准备空的二维数组
       const arr = []
       // 准备一个小数组，最大长度8
