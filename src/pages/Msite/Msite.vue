@@ -347,19 +347,14 @@ export default {
   mounted () {
     this.$store.dispatch('getCategorys')
     this.$store.dispatch('getAddress')
-    new Swiper('.swiper-container', {
-      pagination: {
-        el: '.swiper-pagination'
-      },
-      loop: true
-    })
+    this.$store.dispatch('getShops')
   },
   computed: {
     ...mapState(['address', 'categorys']),
     /*
-           根据categorys一维数组生成一个2维数组
-           小数组中的元素个数最大是8
-            */
+             根据categorys一维数组生成一个2维数组
+             小数组中的元素个数最大是8
+              */
     categorysArr () {
       const {categorys} = this
       const {address} = this
@@ -381,6 +376,18 @@ export default {
         minArr.push(c)
       })
       return arr
+    }
+  },
+  watch: {
+    categorys (value) {
+      this.$nextTick(() => {
+        new Swiper('.swiper-container', {
+          pagination: {
+            el: '.swiper-pagination'
+          },
+          loop: true
+        })
+      })
     }
   }
 }
