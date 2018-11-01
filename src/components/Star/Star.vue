@@ -37,7 +37,6 @@ export default {
       while (scs.length < 5) {
         scs.push(CLASS_OFF)
       }
-
       return scs
     }
   }

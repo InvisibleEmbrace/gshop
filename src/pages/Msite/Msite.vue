@@ -348,9 +348,11 @@ export default {
     this.$store.dispatch('getCategorys')
     this.$store.dispatch('getAddress')
     this.$store.dispatch('getShops')
+    // 异步获取登陆用户信息
+    this.$store.dispatch('getUserInfo')
   },
   computed: {
-    ...mapState(['address', 'categorys']),
+    ...mapState(['address', 'categorys', 'userInfo']),
     /*
              根据categorys一维数组生成一个2维数组
              小数组中的元素个数最大是8
