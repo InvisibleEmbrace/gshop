@@ -13,7 +13,9 @@
           <div :class="{on:loginWay}">
             <section class="login_message">
               <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
-              <button :disabled="!rightPhone" class="get_verification" :class="{right_phone: rightPhone}" @click="getCode">{{computeTime>0 ? `已发送(${computeTime}s)` : '获取验证码'}}</button>
+              <button :disabled="!rightPhone" class="get_verification" :class="{right_phone: rightPhone}"
+                      @click="getCode">{{computeTime>0 ? `已发送(${computeTime}s)` : '获取验证码'}}
+              </button>
             </section>
             <section class="login_verification">
               <input type="tel" maxlength="8" placeholder="验证码">
@@ -29,10 +31,11 @@
                 <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="密码">
-                <div class="switch_button off">
-                  <div class="switch_circle"></div>
-                  <span class="switch_text">...</span>
+                <input type="password" maxlength="8" placeholder="密码" v-if="showPwd" v-model="pwd">
+                <input type="text" maxlength="8" placeholder="密码" v-else v-model="pwd">
+                <div class="switch_button" :class="showPwd?'on':'off'" @click="showPwd=!showPwd">
+                  <div class="switch_circle" :class="{right: showPwd}"></div>
+                  <span class="switch_text">{{showPwd ? 'on' : 'off'}}</span>
                 </div>
               </section>
               <section class="login_message">
@@ -59,7 +62,9 @@ export default {
     return {
       loginWay: true, // true代表短信登陆, false代表密码
       phone: '', // 手机号
-      computeTime: 0 // 计时的时间
+      computeTime: 0, // 计时的时间
+      showPwd: false, // 是否显示密码
+      pwd: '' // 密码
     }
   },
   computed: {
