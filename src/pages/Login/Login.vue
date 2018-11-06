@@ -40,7 +40,8 @@
               </section>
               <section class="login_message">
                 <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
-                <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha" ref="captcha">
+                <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha"
+                     ref="captcha">
               </section>
             </section>
           </div>
@@ -57,8 +58,9 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars,no-useless-return */
 import AlertTip from '../../components/AlertTip/AlertTip.vue'
+import {reqSendCode, reqSmsLogin, reqPwdLogin} from '../../api'
 export default {
   data () {
     return {
@@ -99,16 +101,21 @@ export default {
       }
     },
     async login () {
+      let result
       // 前台表单验证
-      if (this.loginWay) { // 短信验证
+      if (this.loginWay) { // 短信登陆
         const {rightPhone, phone, code} = this
         if (!this.rightPhone) {
           // 手机号不正确
           this.showAlert('手机号不正确')
+          return
         } else if (!/^\d{6}$/.test(code)) {
           // 验证必须是6位数字
           this.showAlert('验证必须是6位数字')
+          return
         }
+        // 发送ajax请求短信登陆
+        result = await reqSmsLogin(phone, code)
       } else {
         const {name, pwd, captcha} = this
         if (!this.name) {
@@ -121,6 +128,29 @@ export default {
           // 验证码必须指定
           this.showAlert('验证码必须指定')
         }
+        // 发送ajax请求密码登陆
+        result = await reqPwdLogin({name, pwd, captcha})
+      }
+      // 停止计时
+      if (this.computeTime) {
+        this.computeTime = 0
+        clearInterval(this.intervalId)
+        this.intervalId = undefined
+      }
+      // 根据数据结果处理
+      if (result.code === 0) {
+        const user = result.data
+        // 将user保存到vuex的state
+        this.$store.dispatch('recordUser', user)
+        // 去个人中心姐界面
+        this.$router.replace('/profile')
+      } else {
+        // 显示新的图片验证码
+        this.getCaptcha()
+        this.captcha = ''
+        // 显示警告提示
+        const msg = result.msg
+        this.showAlert(msg)
       }
     },
     // 关闭警告框
