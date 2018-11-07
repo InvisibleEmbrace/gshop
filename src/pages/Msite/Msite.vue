@@ -1,12 +1,17 @@
 <template>
   <section class="msite">
     <!--首页头部-->
-    <HeaderTop title="北京">
+    <HeaderTop :title="address.name">
       <router-link slot="left" to="/search" class="header_search">
         <i class="iconfont icon-sousuo"></i>
       </router-link>
-      <router-link slot="right" to="/login" class="header_login">
-        <span class="header_login_text">登录|注册</span>
+      <router-link slot="right" :to="userInfo._id ? '/userinfo': '/login'" class="header_login">
+        <span class="header_login_text" v-if="!userInfo._id">
+          登录|注册
+        </span>
+        <span class="header_login_text" v-else>
+           <i class="iconfont icon-person"></i>
+        </span>
       </router-link>
     </HeaderTop>
     <!--首页导航-->
