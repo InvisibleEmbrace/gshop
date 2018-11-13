@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
   <div>
     <div class="goods">
@@ -70,8 +71,14 @@ export default {
   mounted () {
     this.$store.dispatch('getShopGoods', () => { // 数据更新后执行
       this.$nextTick(() => { // 列表数据更新显示后执行
-        new BScroll('.menu-wrapper')
-        new BScroll('.foods-wrapper')
+        const foodScroll = new BScroll('.foods-wrapper', {
+          probeType: 3
+        })
+
+        // 给右侧列表绑定事件
+        foodScroll.on('scroll', ({x, y}) => {
+          console.log(x, y)
+        })
       })
     })
   },
