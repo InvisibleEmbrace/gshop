@@ -3,7 +3,7 @@
     <div class="goods">
       <div class="menu-wrapper" ref="menuWrapper">
         <ul>
-          <li class="menu-item current" v-for="(good,index) in goods" :key="index">
+          <li class="menu-item" v-for="(good,index) in goods" :key="index" :class="{current: index === currentIndex}" @click="clickMenuItem(index)">
             <span class="text bottom-border-1px">
               <img class="icon" :src="good.icon" v-if="good.icon">{{good.name}}
             </span>
@@ -81,7 +81,19 @@ export default {
     })
   },
   computed: {
-    ...mapState(['goods'])
+    ...mapState(['goods']),
+    // 计算得到当前分类的下标
+    currentIndex () { // 初始和相关数据发生了变化
+      // 得到条件数据
+      const {scrollY, tops} = this
+      // 根据条件计算产生一个结果
+      const index = tops.findIndex((top, index) => {
+        // scrollY>=当前top && scrollY<下一个top
+        return scrollY >= top && scrollY < tops[index + 1]
+      })
+      // 返回结果
+      return index
+    }
   },
   methods: {
     _initScroll () {
@@ -121,6 +133,17 @@ export default {
       // 3. 更新数据
       this.tops = tops
       console.log(tops)
+    },
+    clickMenuItem (index) {
+      // console.log(index)
+      // 使用右侧列表滑动到对应的位置
+
+      // 得到目标位置的scrollY
+      const scrollY = this.tops[index]
+      // 立即更新scrollY(让点击的分类项成为当前分类)
+      this.scrollY = scrollY
+      // 平滑滑动右侧列表
+      this.foodsScroll.scrollTo(0, -scrollY, 300)
     }
   }
 }
