@@ -1,4 +1,3 @@
-<!--suppress ALL -->
 <template>
   <div>
     <div class="goods">
@@ -16,7 +15,7 @@
         </ul>
       </div>
       <div class="foods-wrapper" ref="foodsWrapper">
-        <ul>
+        <ul ref="foodUl">
           <li class="food-list-hook" v-for="(good,index) in goods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
@@ -31,12 +30,15 @@
                     <span>好评率{{food.rating}}%</span></div>
                   <div class="price">
                     <span class="now">￥{{food.price}}</span></div>
-                    <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
-                  <div class="cartcontrol-wrapper">CartControl</div></div>
+                  <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
+                  <div class="cartcontrol-wrapper">CartControl</div>
+                </div>
               </li>
               <li class="food-item bottom-border-1px">
                 <div class="icon">
-                  <img width="57" height="57" src="http://fuss10.elemecdn.com/d/22/260bd78ee6ac6051136c5447fe307jpeg.jpeg?imageView2/1/w/114/h/114"></div>
+                  <img width="57" height="57"
+                       src="http://fuss10.elemecdn.com/d/22/260bd78ee6ac6051136c5447fe307jpeg.jpeg?imageView2/1/w/114/h/114">
+                </div>
                 <div class="content">
                   <h2 class="name">红豆薏米美肤粥</h2>
                   <p class="desc">甜粥</p>
@@ -45,7 +47,8 @@
                     <span>好评率 100%</span></div>
                   <div class="price">
                     <span class="now">￥12</span></div>
-                  <div class="cartcontrol-wrapper">CartControl</div></div>
+                  <div class="cartcontrol-wrapper">CartControl</div>
+                </div>
               </li>
             </ul>
           </li>
@@ -60,6 +63,7 @@
 
 import {mapState} from 'vuex'
 import BScroll from 'better-scroll'
+
 export default {
   data () {
     return {
@@ -71,19 +75,53 @@ export default {
   mounted () {
     this.$store.dispatch('getShopGoods', () => { // 数据更新后执行
       this.$nextTick(() => { // 列表数据更新显示后执行
-        const foodScroll = new BScroll('.foods-wrapper', {
-          probeType: 3
-        })
-
-        // 给右侧列表绑定事件
-        foodScroll.on('scroll', ({x, y}) => {
-          console.log(x, y)
-        })
+        this._initScroll()
+        this._initTops()
       })
     })
   },
   computed: {
     ...mapState(['goods'])
+  },
+  methods: {
+    _initScroll () {
+      // 初始化滚动
+      new BScroll('.menu-wrapper', {
+        click: true
+      })
+      this.foodsScroll = new BScroll('.foods-wrapper', {
+        probeType: 2, // 因为惯性滑动不会触发
+        click: true
+      })
+      // 给右侧列表绑定scroll监听
+      this.foodsScroll.on('scroll', ({x, y}) => {
+        console.log(x, y)
+        this.scrollY = Math.abs(y)
+      })
+      // 给右侧列表绑定scroll结束的监听
+      this.foodsScroll.on('scrollEnd', ({x, y}) => {
+        console.log('scrollEnd', x, y)
+        this.scrollY = Math.abs(y)
+      })
+    },
+    // 初始化tops
+    _initTops () {
+      // 1.初始化tops
+      const tops = []
+      let top = 0
+      tops.push(top)
+      // 2.收集
+      // 找到所有分类的li
+      const lis = this.$refs.foodUl.getElementsByClassName('food-list-hook')
+      // 将具有length属性的对象转成数组,遍历
+      Array.prototype.slice.call(lis).forEach(li => {
+        top += li.clientHeight
+        tops.push(top)
+      })
+      // 3. 更新数据
+      this.tops = tops
+      console.log(tops)
+    }
   }
 }
 </script>
