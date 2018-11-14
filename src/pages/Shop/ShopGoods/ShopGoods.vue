@@ -31,7 +31,9 @@
                   <div class="price">
                     <span class="now">￥{{food.price}}</span></div>
                   <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
-                  <div class="cartcontrol-wrapper">CartControl</div>
+                  <div class="cartcontrol-wrapper">
+                    <CartControl :food="food"/>
+                  </div>
                 </div>
               </li>
               <li class="food-item bottom-border-1px">
@@ -54,6 +56,7 @@
           </li>
         </ul>
       </div>
+      <ShopCart/>
     </div>
   </div>
 </template>
@@ -63,6 +66,8 @@
 
 import {mapState} from 'vuex'
 import BScroll from 'better-scroll'
+import CartControl from '../../../components/CartControl/CartControl.vue'
+import ShopCart from '../../../components/ShopCart/ShopCart.vue'
 
 export default {
   data () {
@@ -71,6 +76,10 @@ export default {
       tops: [], // 所有右侧分类li的top组成的数组  (列表第一次显示后就不再变化)
       food: {} // 需要显示的food
     }
+  },
+  components: {
+    CartControl,
+    ShopCart
   },
   mounted () {
     this.$store.dispatch('getShopGoods', () => { // 数据更新后执行
